@@ -22,11 +22,12 @@ public class AdminHouseController{
 		this.houseRepository = houseRepository;
 		
 	}
+	
 	@GetMapping
 	public String index(Model model,@PageableDefault(page = 0, size = 10,sort = "id",direction = Direction.ASC) Pageable pageable) {
 		Page<House>housePage = houseRepository.findAll(pageable);
 		
-		model.addAttribute("housesPage",housePage);
+		model.addAttribute("housePage",housePage);
 		
 		return "admin/houses/index";
 		
