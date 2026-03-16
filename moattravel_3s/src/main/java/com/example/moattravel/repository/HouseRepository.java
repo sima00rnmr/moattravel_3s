@@ -1,5 +1,8 @@
 package com.example.moattravel.repository;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.moattravel.entity.House;
@@ -17,5 +20,8 @@ import com.example.moattravel.entity.House;
  * */
 
 public interface HouseRepository extends JpaRepository<House,Integer>{
+	//findBy○○○Like()というメソッドで
+	//SQLのLIKE句と同様のクエリを実行できる
+	public Page<House>findByNameLike(String keyword,Pageable pageable);
 	
 }
