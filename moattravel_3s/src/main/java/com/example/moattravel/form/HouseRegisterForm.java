@@ -1,4 +1,20 @@
 package com.example.moattravel.form;
+/*フォームクラスとは…
+ * フォームの各入力項目に対応するフィールドや
+ * ゲッター、セッターなどを定義する
+ * 
+ * フォームがそもそも…
+ * UI側から入力した内容をDB側に登録するためのページ
+ * 
+ * なのでこの枠にはこの項目をこのルールで入れないと
+ *ダメだよ…も定めている
+ *@NotBlank…空欄はダメ！みたいに
+ *
+ * よくやってるミス…
+ * @NotNullは数値に対する未入力を許容しないアノテーション
+ * StringではなくIntegerを使おうね…
+ * Blankの場合も逆も然り
+ * */
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
