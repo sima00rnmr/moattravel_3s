@@ -85,10 +85,6 @@ public class AdminHouseController {
 
 	@GetMapping("/{id}/edit")
 	/*これは編集画面を表示するための処理
-	 * 
-	 * 
-	 * 
-	 * 
 	 * */
 
 	public String edit(@PathVariable(name = "id") Integer id, Model model) {
@@ -103,7 +99,8 @@ public class AdminHouseController {
 
 		return "admin/houses/edit";
 	}
-	
+
+	@PostMapping("/{id}/update")
 	/*フォーム送信（更新・登録など）を処理する
 	 * 
 	 * 更新処理時（今回はFormなのでこのイメージ）
@@ -113,4 +110,17 @@ public class AdminHouseController {
 	 *自動で入るようになる
 	 *だから、htmlの入力値→HouseEditFormに入る
 	 * */
+	public String update(@ModelAttribute @Validated HouseEditForm houseEditForm, BindingResult bindingResult,
+			RedirectAttributes redirectAttributes) {
+		//エラーの場合はフォーム画面に留まって
+		if (bindingResult.hasErrors()) {
+
+			return "admin/houses/edit";
+		}
+		//OKな場合は更新して、編集完了のメッセージと共に一覧のページに遷移してね
+		houseService.update(houseEditForm);
+		redirectAttributes.addFlashAttribute("successMessage", "民宿情報を編集しました。");
+
+		return "redirect:/admin/houses";
+	}
 }
