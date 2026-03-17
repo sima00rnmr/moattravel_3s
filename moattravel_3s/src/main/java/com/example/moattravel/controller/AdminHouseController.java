@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.moattravel.entity.House;
+import com.example.moattravel.form.HouseEditForm;
 import com.example.moattravel.form.HouseRegisterForm;
 import com.example.moattravel.repository.HouseRepository;
 import com.example.moattravel.service.HouseService;
@@ -27,7 +28,7 @@ public class AdminHouseController {
 	private final HouseRepository houseRepository;
 	private final HouseService houseService;
 
-	public AdminHouseController(HouseRepository houseRepository,HouseService houseService) {
+	public AdminHouseController(HouseRepository houseRepository, HouseService houseService) {
 		this.houseRepository = houseRepository;
 		this.houseService = houseService;
 
@@ -37,46 +38,79 @@ public class AdminHouseController {
 	public String index(Model model,
 			@PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
 			@RequestParam(name = "keyword", required = false) String keyword) {
-	
+
 		Page<House> housePage;
-		
-		if(keyword !=null&& !keyword.isEmpty()) {
+
+		if (keyword != null && !keyword.isEmpty()) {
 			//キーワード検索して該当するものがあったらこれを表示してね
-			housePage = houseRepository.findByNameLike("%" +keyword+"%",pageable);
-		}else {
+			housePage = houseRepository.findByNameLike("%" + keyword + "%", pageable);
+		} else {
 			//無かった場合は全部表示で良いよ
 			housePage = houseRepository.findAll(pageable);
 		}
 
 		model.addAttribute("housePage", housePage);
-		model.addAttribute("keyword",keyword);
+		model.addAttribute("keyword", keyword);
 
 		return "admin/houses/index";
 	}
-	
+
 	@GetMapping("{id}")
-	public String show(@PathVariable(name = "id")Integer id,Model model) {
+	public String show(@PathVariable(name = "id") Integer id, Model model) {
 		House house = houseRepository.getReferenceById(id);
-		
-		model.addAttribute("house",house);
-		
+
+		model.addAttribute("house", house);
+
 		return "admin/houses/show";
 	}
-	
+
 	@GetMapping("/register")
 	public String register(Model model) {
 		model.addAttribute("houseRegisterForm", new HouseRegisterForm());
 		return "admin/houses/register";
-		
+
 	}
+
 	@PostMapping("/create")
-	public String create(@ModelAttribute @Validated HouseRegisterForm houseRegisterForm,BindingResult bindingResult,RedirectAttributes redirectAttributes) {
-		if(bindingResult.hasErrors()) {
+	public String create(@ModelAttribute @Validated HouseRegisterForm houseRegisterForm, BindingResult bindingResult,
+			RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
 			return "admin/houses/register";
 		}
 		houseService.create(houseRegisterForm);
-		redirectAttributes.addFlashAttribute("successMessage","民宿を登録しました。");
-		
-	return "redirect:/admin/houses";
+		redirectAttributes.addFlashAttribute("successMessage", "民宿を登録しました。");
+
+		return "redirect:/admin/houses";
 	}
+
+	@GetMapping("/{id}/edit")
+	/*これは編集画面を表示するための処理
+	 * 
+	 * 
+	 * 
+	 * 
+	 * */
+
+	public String edit(@PathVariable(name = "id") Integer id, Model model) {
+		House house = houseRepository.getReferenceById(id);
+		String imageName = house.getImageName();
+		HouseEditForm houseEditForm = new HouseEditForm(house.getId(), house.getName(), null, house.getDescription(),
+				house.getPrice(), house.getCapacity(), house.getPostalCode(), house.getAddress(),
+				house.getPhoneNumber());
+
+		model.addAttribute("imageName", imageName);
+		model.addAttribute("houseEditForm", houseEditForm);
+
+		return "admin/houses/edit";
+	}
+	
+	/*フォーム送信（更新・登録など）を処理する
+	 * 
+	 * 更新処理時（今回はFormなのでこのイメージ）
+	 * HTML → Form → Controller → DB（idで更新）
+	 *<input th:field="*{name}">
+	 *このhtml上の記載によって入力値がHouseEditFormに
+	 *自動で入るようになる
+	 *だから、htmlの入力値→HouseEditFormに入る
+	 * */
 }
