@@ -117,10 +117,30 @@ public class AdminHouseController {
 
 			return "admin/houses/edit";
 		}
-		//OKな場合は更新して、編集完了のメッセージと共に一覧のページに遷移してね
+		//OKな場合は更新して、編集完了のメッセージと共に一覧のページにアクセスしてね
 		houseService.update(houseEditForm);
 		redirectAttributes.addFlashAttribute("successMessage", "民宿情報を編集しました。");
 
+		return "redirect:/admin/houses";
+	}
+	/*更新と再度アクセス、何が違うの…？
+	 * return 画面名　とredirect:～
+	 * return 画面名→画面遷移…の処理だと、更新処理はPOSTで実行
+	 * …再度処理を行っちゃう（二度更新掛けられちゃう？）
+	 * redirect:～はただ読み込むだけ、なので更新は行わない
+	 * 二重で処理を行われちゃうのを防止している
+	 * 
+	 * なので、基本更新処理（追加・削除も）の後はredirect:を使うのがセオリー
+	 * 
+	 * 二重送信…　決済するときに決済処理が二重で行われちゃったりしたら大変だよね
+	 * 
+	 * */
+	@PostMapping("/{id}/delete")
+	public String delete(@PathVariable(name = "id")Integer id,RedirectAttributes redirectAttributes) {
+		houseRepository.deleteById(id);
+		//民宿削除したら一覧ページにアクセスしてね
+		redirectAttributes.addFlashAttribute("successMessage","民宿を削除しました");
+		//redirect:　このURLにもう一度リクエストを送っての意味。
 		return "redirect:/admin/houses";
 	}
 }
