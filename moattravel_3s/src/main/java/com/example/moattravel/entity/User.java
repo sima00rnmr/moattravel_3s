@@ -1,0 +1,66 @@
+package com.example.moattravel.entity;
+
+import java.sql.Timestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import lombok.Data;
+
+@Entity
+@Table(name = "users")
+@Data
+public class User {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Integer id;
+
+	@Column(name = "name")
+	private String name;
+
+	@Column(name = "furigana")
+	private String furigana;
+
+	@Column(name = "postal_code")
+	private String postalCode;
+
+	@Column(name = "address")
+	private String address;
+
+	@Column(name = "phone_number")
+	private String phoneNumber;
+
+	@Column(name = "email")
+	private String email;
+
+	@Column(name = "password")
+	private String password;
+//	多対一のリレーションシップ
+	@ManyToOne
+	/*ここでの使い方だと
+	 * １つのルールを沢山の対象に対して
+	 * 適用しているよーの意味
+	 * 
+	 * Userのルールは複数の人に適用できる　みたいな？
+	 * ただし、ユーザー１人は１つのルール
+	 * （ロール）しか持てないよ
+	 * */
+	@JoinColumn(name = "role_id")
+	private Role role;
+
+	@Column(name = "enable")
+	private Boolean enable;
+
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private Timestamp createdAt;
+
+	@Column(name = "updateat", insertable = false, updatable = false)
+	private Timestamp updatedAt;
+}
