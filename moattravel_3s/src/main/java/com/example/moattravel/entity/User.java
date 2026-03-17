@@ -55,12 +55,12 @@ public class User {
 	@JoinColumn(name = "role_id")
 	private Role role;
 
-	@Column(name = "enable")
-	private Boolean enable;
+	@Column(name = "enabled")
+	private Boolean enabled;
 
 	@Column(name = "created_at", insertable = false, updatable = false)
 	private Timestamp createdAt;
 
-	@Column(name = "updateat", insertable = false, updatable = false)
+	@Column(name = "updated_at", insertable = false, updatable = false)
 	private Timestamp updatedAt;
 }
