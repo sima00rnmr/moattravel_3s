@@ -44,7 +44,7 @@ public User create(SignupForm signupForm) {
 	user.setEmail(signupForm.getEmail());
 	user.setPassword(passwordEncoder.encode(signupForm.getPassword()));
 	user.setRole(role);
-	user.setEnabled(true);
+	user.setEnabled(false);
 	
 	return userRepository.save(user);
 	
@@ -54,7 +54,7 @@ public User create(SignupForm signupForm) {
  * */
 
 //メールアドレスが登録済みかどうかをチェックする
-public boolean isEmailResistered(String email) {
+public boolean isEmailRegistered(String email) {
 	//もし、Userのアドレス（このアドレスを持っているユーザーがいるかどうか）をみつけることが出来たら…nullで返す（アドレスの重複を許容しない）
 	User user = userRepository.findByEmail(email);
 	return user !=null;
@@ -64,6 +64,18 @@ public boolean isEmailResistered(String email) {
 //パスワードとパスワード（確認用）の入力値が一致するかどうかチェックする
 public boolean isSamePassword(String password,String passwordConfirmation) {
 	return password.equals(passwordConfirmation);
+}
+
+//ユーザーを有効にする
+/*認証に成功した際に実行するメソッド
+ * 
+ * */
+@Transactional
+public void enableUser(User user) {
+	user.setEnabled(true);
+	userRepository.save(user);
+	
+	
 }
 
 }
