@@ -26,8 +26,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
-
 /*Configuration…Beanを定義する（設定のためのクラス）
  * 
  * Bean…ルールや部品そのもの　設定やオブジェクト
@@ -43,7 +41,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
-	
+
 	/*パスの末尾に/**をつけることで、それ以下のURL全てを
 	 * 対象にしている
 	 * hasRole("ADMIN")
@@ -57,28 +55,42 @@ public class WebSecurityConfig {
 	 * DIコンテナに登録される
 	 * 
 	 * */
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-				.authorizeHttpRequests((requests) -> requests
-						.requestMatchers("/css/**", "/images/**", "/js/**", "/strage/**", "/","/signup/**","/houses","/houses/{id}").permitAll() //全てのユーザーにアクセスを許可するURL
-						 .requestMatchers("/admin/**").hasRole("ADMIN")//管理者にのみ許可をするURL
-						.anyRequest().authenticated() //上記以外のURLはログインが必要または会員または管理者のどちらでもOK
-				)
-				.formLogin((form) -> form
-						.loginPage("/login") //ログインページのURL
-						.loginProcessingUrl("/login")//ログインフォームの送信先URL
-						 .defaultSuccessUrl("/?loggedIn")//ログイン成功時のリダイレクト先URL
-						 .failureUrl("/login?error") //ログイン失敗時のリダイレクト先URL
-						.permitAll())
-				.logout((logout) -> logout
-						.logoutSuccessUrl("/?loggedOut")//ログアウト時のリダイレクト先URL
-						  .permitAll()
-						  );
-		return http.build();
-	}
+	 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+        http
+            .authorizeHttpRequests((requests) -> requests
+                .requestMatchers(
+                    "/css/**", "/images/**", "/js/**", "/storage/**",
+                    "/", "/signup/**",
+                    "/houses", "/houses/{id}",
+                    "/stripe/webhook"
+                ).permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+
+            .formLogin((form) -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/?loggedIn")
+                .failureUrl("/login?error")
+                .permitAll()
+            )
+
+            .logout((logout) -> logout
+                .logoutSuccessUrl("/?loggedOut")
+                .permitAll()
+            )
+
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/stripe/webhook")
+            );
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
