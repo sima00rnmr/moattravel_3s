@@ -98,7 +98,7 @@ public class AdminHouseController {
 		houseService.update(houseEditForm);
 		redirectAttributes.addFlashAttribute("successMessage","民宿情報を編集しました");
 		
-	return "rederect:/admin/houses";
+	return "redirect:/admin/houses";
 
 }
 }

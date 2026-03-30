@@ -53,7 +53,7 @@ public class HouseService {
     	House house =houseRepository.getReferenceById(houseEditForm.getId());
     	MultipartFile imageFile =houseEditForm.getImageFile(); 
     if(!imageFile.isEmpty()) {
-    	String imageName = imageFile.getOrignalFilename();
+    	String imageName = imageFile.getOriginalFilename();
     	String hashedImageName =generateNewFileName(imageName);
     	Path filePath = Paths.get("src/main/resources/static/storage" + hashedImageName);
     	copyImageFile(imageFile,filePath);
