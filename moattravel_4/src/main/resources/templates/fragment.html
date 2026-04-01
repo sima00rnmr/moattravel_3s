@@ -29,11 +29,9 @@
 
 <body>
 	<!-- ヘッダーの部品化 -->
-
 	<div th:fragment="header" th:remove="tag">
 		<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm moattravel-navbar">
 			<div class="container moattravel-container">
-
 				<a class="navbar-brand" th:href="@{/}">
 					<img class="moattravel-logo me-1" th:src="@{/images/logo.png}" alt="moat Travel">
 				</a>
@@ -46,7 +44,6 @@
 
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav ms-auto">
-
 						<!-- 未ログインであれば表示する -->
 						<li class="nav-item" sec:authorize="isAnonymous()">
 							<a class="nav-link" th:href="@{/login}">ログイン</a>
@@ -64,6 +61,7 @@
 
 							<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownGeneral">
 								<a class="dropdown-item moattravel-dropdown-item" th:href="@{/user}">会員情報</a>
+								<a class="dropdown-item moattravel-dropdown-item" th:href="@{/reservations}">予約一覧</a>
 
 								<div class="dropdown-divider"></div>
 
@@ -95,10 +93,8 @@
 								<form class="d-none" id="logout-form" th:action="@{/logout}" method="post"></form>
 							</div>
 						</li>
-
 					</ul>
 				</div>
-
 			</div>
 		</nav>
 	</div>
