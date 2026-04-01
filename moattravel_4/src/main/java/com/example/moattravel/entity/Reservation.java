@@ -27,6 +27,10 @@ public class Reservation {
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
+	
+	@ManyToOne
+	@JoinColumn(name = "house_id")
+	private House house;
 
 	@Column(name = "checkin_date")
 	private LocalDate checkinDate;
