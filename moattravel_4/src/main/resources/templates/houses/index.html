@@ -65,7 +65,9 @@
 
 						<!-- 価格検索 -->
 						<div class="card mb-3">
-							<div class="card-header">1泊あたりの予算から探す</div>
+							<div class="card-header">
+								1泊あたりの予算から探す
+							</div>
 							<div class="card-body">
 								<form method="get" th:action="@{/houses}" class="w-100">
 									<div class="form-group mb-3">
@@ -78,17 +80,17 @@
 											<option value="10000" th:selected="${price == 10000}">10,000円以内</option>
 										</select>
 									</div>
-									<button type="submit"
-										class="btn text-white shadow-sm w-100 moattravel-btn">検索</button>
+									<div class="form-group">
+										<button type="submit"
+											class="btn text-white shadow-sm w-100 moattravel-btn">検索</button>
+									</div>
 								</form>
 							</div>
 						</div>
 
 					</div>
 
-					<!-- 一覧表示 -->
 					<div class="col">
-
 						<div class="d-flex justify-content-between flex-wrap">
 							<p th:if="${housePage.getTotalPages() > 1}" class="fs-5 mb-3"
 								th:text="${'検索結果：' + housePage.getTotalElements() + '件（' + (housePage.getNumber() + 1) + ' / ' + housePage.getTotalPages() + ' ページ）'}">
@@ -96,6 +98,18 @@
 
 							<p th:unless="${housePage.getTotalPages() > 1}" class="fs-5 mb-3"
 								th:text="${'検索結果：' + housePage.getTotalElements() + '件'}"></p>
+
+							<form method="get" th:action="@{/houses}" class="mb-3 moattravel-sort-box">
+								<input th:if="${keyword}" type="hidden" name="keyword" th:value="${keyword}">
+								<input th:if="${area}" type="hidden" name="area" th:value="${area}">
+								<input th:if="${price}" type="hidden" name="price" th:value="${price}">
+
+								<select class="form-select form-select-sm" name="order" onChange="this.form.submit();">
+									<option value="createdAtDesc"
+										th:selected="${order == 'createdAtDesc' || order == null}">新着順</option>
+									<option value="priceAsc" th:selected="${order == 'priceAsc'}">宿泊料金が安い順</option>
+								</select>
+							</form>
 						</div>
 
 						<div class="mb-3" th:each="house : ${housePage}">
@@ -106,22 +120,30 @@
 										<div class="col-md-4">
 											<img th:if="${house.getImageName()}"
 												th:src="@{/storage/__${house.getImageName()}__}"
-												class="card-img-top moattravel-horizontal-card-image">
+												class="card-img-top moattravel-horizontal-card-image" alt="店舗画像">
 											<img th:unless="${house.getImageName()}" th:src="@{/images/noImage.png}"
-												class="card-img-top moattravel-horizontal-card-image">
+												class="card-img-top moattravel-horizontal-card-image" alt="NO IMAGE">
 										</div>
 
 										<div class="col-md-8">
 											<div class="card-body">
 												<h3 class="card-title mb-3" th:text="${house.getName()}"></h3>
-												<hr>
-												<p th:text="${house.getDescription()}"></p>
-												<p>
-													<small th:text="${'〒' + house.getPostalCode()}"></small>
-													<small th:text="${house.getAddress()}"></small>
+
+												<hr class="mb-3">
+
+												<p class="card-text mb-2">
+													<span th:text="${house.getDescription()}"></span>
 												</p>
-												<p
-													th:text="${#numbers.formatInteger(house.getPrice(),1,'COMMA') + '円 / 泊'}">
+
+												<p class="card-text mb-2">
+													<small class="text-muted"
+														th:text="${'〒' + house.getPostalCode()}"></small>
+													<small class="text-muted" th:text="${house.getAddress()}"></small>
+												</p>
+
+												<p class="card-text">
+													<span
+														th:text="${#numbers.formatInteger(house.getPrice(), 1, 'COMMA') + '円 / 泊'}"></span>
 												</p>
 											</div>
 										</div>
@@ -131,15 +153,45 @@
 							</a>
 						</div>
 
-					</div>
+						<!-- ページネーション -->
+						<div th:if="${housePage.getTotalPages() > 1}" class="d-flex justify-content-center">
+							<nav aria-label="民宿一覧ページ">
+								<ul class="pagination">
 
+									<li class="page-item">
+										<span th:if="${housePage.isFirst()}" class="page-link disabled">前</span>
+										<a th:unless="${housePage.isFirst()}"
+											th:href="@{/houses(page = ${housePage.getNumber() - 1}, keyword = ${keyword}, area = ${area}, price = ${price}, order = ${order})}"
+											class="page-link moattravel-page-link">前</a>
+									</li>
+
+									<li th:each="i : ${#numbers.sequence(0, housePage.getTotalPages() - 1)}"
+										class="page-item">
+										<span th:if="${i == housePage.getNumber()}"
+											class="page-link active moattravel-active" th:text="${i + 1}"></span>
+										<a th:unless="${i == housePage.getNumber()}"
+											th:href="@{/houses(page = ${i}, keyword = ${keyword}, area = ${area}, price = ${price}, order = ${order})}"
+											class="page-link moattravel-page-link" th:text="${i + 1}"></a>
+									</li>
+
+									<li class="page-item">
+										<span th:if="${housePage.isLast()}" class="page-link disabled">次</span>
+										<a th:unless="${housePage.isLast()}"
+											th:href="@{/houses(page = ${housePage.getNumber() + 1}, keyword = ${keyword}, area = ${area}, price = ${price}, order = ${order})}"
+											class="page-link moattravel-page-link">次</a>
+									</li>
+
+								</ul>
+							</nav>
+						</div>
+
+					</div>
 				</div>
 			</div>
 		</main>
 
 		<!-- フッター -->
 		<div th:replace="~{fragment :: footer}"></div>
-
 	</div>
 
 	<div th:replace="~{fragment :: scripts}"></div>
