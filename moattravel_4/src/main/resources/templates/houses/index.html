@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<div th:replace="~{fragment :: meta}"></div>
+	<div th:replace="~{fragment :: styles}"></div>
+	<title>民宿一覧</title>
+</head>
+
+<body>
+	<div class="moattravel-wrapper">
+
+		<!-- ヘッダー -->
+		<div th:replace="~{fragment :: header}"></div>
+
+		<main>
+			<div class="container moattravel-container pb-5">
+				<div class="row justify-content-center">
+
+					<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+							<li class="breadcrumb-item active" aria-current="page">民宿一覧</li>
+						</ol>
+					</nav>
+
+					<div class="col-xl-3 col-lg-4 col-md-12">
+
+						<!-- キーワード検索 -->
+						<form method="get" th:action="@{/houses}" class="w-100 mb-3">
+							<div class="input-group">
+								<input type="text" class="form-control" name="keyword" th:value="${keyword}"
+									placeholder="民宿名・目的地">
+								<button type="submit" class="btn text-white shadow-sm moattravel-btn">検索</button>
+							</div>
+						</form>
+
+						<!-- エリア検索 -->
+						<div class="card mb-3">
+							<div class="card-header">エリアから探す</div>
+							<div class="card-body">
+								<form method="get" th:action="@{/houses}" class="w-100">
+									<div class="form-group mb-3">
+										<select class="form-control form-select" name="area">
+											<option value="" hidden>選択してください</option>
+											<optgroup label="北海道">
+												<option value="北海道" th:selected="${area == '北海道'}">北海道</option>
+											</optgroup>
+											<optgroup label="東北">
+												<option value="青森県" th:selected="${area == '青森県'}">青森県</option>
+												<option value="岩手県" th:selected="${area == '岩手県'}">岩手県</option>
+												<option value="宮城県" th:selected="${area == '宮城県'}">宮城県</option>
+												<option value="秋田県" th:selected="${area == '秋田県'}">秋田県</option>
+												<option value="山形県" th:selected="${area == '山形県'}">山形県</option>
+												<option value="福島県" th:selected="${area == '福島県'}">福島県</option>
+											</optgroup>
+											<!-- 以下同様に続く -->
+										</select>
+									</div>
+									<button type="submit"
+										class="btn text-white shadow-sm w-100 moattravel-btn">検索</button>
+								</form>
+							</div>
+						</div>
+
+						<!-- 価格検索 -->
+						<div class="card mb-3">
+							<div class="card-header">1泊あたりの予算から探す</div>
+							<div class="card-body">
+								<form method="get" th:action="@{/houses}" class="w-100">
+									<div class="form-group mb-3">
+										<select class="form-control form-select" name="price">
+											<option value="" hidden>選択してください</option>
+											<option value="6000" th:selected="${price == 6000}">6,000円以内</option>
+											<option value="7000" th:selected="${price == 7000}">7,000円以内</option>
+											<option value="8000" th:selected="${price == 8000}">8,000円以内</option>
+											<option value="9000" th:selected="${price == 9000}">9,000円以内</option>
+											<option value="10000" th:selected="${price == 10000}">10,000円以内</option>
+										</select>
+									</div>
+									<button type="submit"
+										class="btn text-white shadow-sm w-100 moattravel-btn">検索</button>
+								</form>
+							</div>
+						</div>
+
+					</div>
+
+					<!-- 一覧表示 -->
+					<div class="col">
+
+						<div class="d-flex justify-content-between flex-wrap">
+							<p th:if="${housePage.getTotalPages() > 1}" class="fs-5 mb-3"
+								th:text="${'検索結果：' + housePage.getTotalElements() + '件（' + (housePage.getNumber() + 1) + ' / ' + housePage.getTotalPages() + ' ページ）'}">
+							</p>
+
+							<p th:unless="${housePage.getTotalPages() > 1}" class="fs-5 mb-3"
+								th:text="${'検索結果：' + housePage.getTotalElements() + '件'}"></p>
+						</div>
+
+						<div class="mb-3" th:each="house : ${housePage}">
+							<a th:href="@{/houses/__${house.getId()}__}" class="link-dark moattravel-card-link">
+								<div class="card h-100">
+									<div class="row g-0">
+
+										<div class="col-md-4">
+											<img th:if="${house.getImageName()}"
+												th:src="@{/storage/__${house.getImageName()}__}"
+												class="card-img-top moattravel-horizontal-card-image">
+											<img th:unless="${house.getImageName()}" th:src="@{/images/noImage.png}"
+												class="card-img-top moattravel-horizontal-card-image">
+										</div>
+
+										<div class="col-md-8">
+											<div class="card-body">
+												<h3 class="card-title mb-3" th:text="${house.getName()}"></h3>
+												<hr>
+												<p th:text="${house.getDescription()}"></p>
+												<p>
+													<small th:text="${'〒' + house.getPostalCode()}"></small>
+													<small th:text="${house.getAddress()}"></small>
+												</p>
+												<p
+													th:text="${#numbers.formatInteger(house.getPrice(),1,'COMMA') + '円 / 泊'}">
+												</p>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</a>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+		</main>
+
+		<!-- フッター -->
+		<div th:replace="~{fragment :: footer}"></div>
+
+	</div>
+
+	<div th:replace="~{fragment :: scripts}"></div>
+</body>
+
+</html>
