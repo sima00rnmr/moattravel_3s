@@ -9,23 +9,23 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class ReservationInputForm{
-	@NotBlank(message ="チェックイン日とチェックアウト日を選択してください。")
+public class ReservationInputForm {
+	@NotBlank(message = "チェックイン日とチェックアウト日を選択してください。")
 	private String fromCheckinDateToCheckoutDate;
-	
-	@NotNull(message ="宿泊人数を入力してください。")
-	@Min(value = 1,message ="宿泊人数は1人以上に設定してください")
+
+	@NotNull(message = "宿泊人数を入力してください。")
+	@Min(value = 1, message = "宿泊人数は1人以上に設定してください")
 	private Integer numberOfPeople;
-	
+
 	//チェックイン日を取得する
 	public LocalDate getCheckinDate() {
-		String[]checkinDateAndCheckoutDate =getFromCheckinDateToCheckoutDate().split("から");
-	return LocalDate.parse(checkinDateAndCheckoutDate[0]);
+		String[] dates = getFromCheckinDateToCheckoutDate().split("から|to");
+		return LocalDate.parse(dates[0].trim());
 	}
+
 	//チェックアウト日を取得する
 	public LocalDate getCheckoutDate() {
-		String[] checkinDateAndCheckoutDate =getFromCheckinDateToCheckoutDate().split("から");
-		return LocalDate.parse(checkinDateAndCheckoutDate[1]);
-		
+		String[] dates = getFromCheckinDateToCheckoutDate().split("から|to");
+		return LocalDate.parse(dates[1].trim());
 	}
-} 
+}

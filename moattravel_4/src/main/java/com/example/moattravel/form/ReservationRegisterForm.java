@@ -9,7 +9,7 @@ import lombok.Data;
 public class ReservationRegisterForm {
 	private Integer houseId;
 
-	private Integer usseId;
+	private Integer userId;
 
 	private String checkinDate;
 
