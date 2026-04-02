@@ -2,6 +2,7 @@ package com.example.moattravel.service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.moattravel.entity.House;
 import com.example.moattravel.entity.Reservation;
 import com.example.moattravel.entity.User;
-import com.example.moattravel.form.ReservationRegisterForm;
 import com.example.moattravel.repository.HouseRepository;
 import com.example.moattravel.repository.ReservationRepository;
 import com.example.moattravel.repository.UserRepository;
@@ -17,46 +17,54 @@ import com.example.moattravel.repository.UserRepository;
 @Service
 public class ReservationService {
 
-	private final ReservationRepository reservationRepository;
-	private final HouseRepository houseRepository;
-	private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
+    private final HouseRepository houseRepository;
+    private final UserRepository userRepository;
 
-	public ReservationService(ReservationRepository reservationRepository, HouseRepository houseRepository,
-			UserRepository userRepository) {
-		this.reservationRepository = reservationRepository;
-		this.houseRepository = houseRepository;
-		this.userRepository = userRepository;
-	}
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            HouseRepository houseRepository,
+            UserRepository userRepository) {
 
-	@Transactional
-	public void create(ReservationRegisterForm reservationRegisterForm) {
-		Reservation reservation =new Reservation();
-		House house =houseRepository.getReferenceById(reservationRegisterForm.getHouseId());
-		User user =userRepository.getReferenceById(reservationRegisterForm.getUserId());
-		LocalDate checkinDate = LocalDate.parse(reservationRegisterForm.getCheckinDate());
-		 LocalDate checkoutDate = LocalDate.parse(reservationRegisterForm.getCheckoutDate());         
-	
-	reservation.setHouse(house);
-	reservation.setUser(user);
-	reservation.setCheckinDate(checkinDate);
-	reservation.setCheckoutDate(checkoutDate);
-	reservation.setNumberOfPeople(reservationRegisterForm.getNumberOfPeople());
-	reservation.setAmount(reservationRegisterForm.getAmount());
+        this.reservationRepository = reservationRepository;
+        this.houseRepository = houseRepository;
+        this.userRepository = userRepository;
+    }
 
-	  reservationRepository.save(reservation);
-	  }
-	//宿泊人数が定員以下かどうかをチェックする
+    @Transactional
+    public void create(Map<String, String> paymentIntentObject) {
 
-	public boolean isWithinCapacity(Integer numberOfPeople, Integer capacity) {
-		return numberOfPeople <= capacity;
+        Reservation reservation = new Reservation();
 
-	}
-	//宿泊料金を計算する
+        Integer houseId = Integer.valueOf(paymentIntentObject.get("houseId"));
+        Integer userId = Integer.valueOf(paymentIntentObject.get("userId"));
 
-	public Integer calculateAmount(LocalDate checkinDate, LocalDate checkoutDate, Integer price) {
-		long numberOfNights = ChronoUnit.DAYS.between(checkinDate, checkoutDate);
-		int amount = price * (int) numberOfNights;
-		return amount;
-	}
+        House house = houseRepository.getReferenceById(houseId);
+        User user = userRepository.getReferenceById(userId);
 
+        LocalDate checkinDate = LocalDate.parse(paymentIntentObject.get("checkinDate"));
+        LocalDate checkoutDate = LocalDate.parse(paymentIntentObject.get("checkoutDate"));
+        Integer numberOfPeople = Integer.valueOf(paymentIntentObject.get("numberOfPeople"));
+        Integer amount = Integer.valueOf(paymentIntentObject.get("amount"));
+
+        reservation.setHouse(house);
+        reservation.setUser(user);
+        reservation.setCheckinDate(checkinDate);
+        reservation.setCheckoutDate(checkoutDate);
+        reservation.setNumberOfPeople(numberOfPeople);
+        reservation.setAmount(amount);
+
+        reservationRepository.save(reservation);
+    }
+
+    // 宿泊人数チェック
+    public boolean isWithinCapacity(Integer numberOfPeople, Integer capacity) {
+        return numberOfPeople <= capacity;
+    }
+
+    // 宿泊料金計算
+    public Integer calculateAmount(LocalDate checkinDate, LocalDate checkoutDate, Integer price) {
+        long numberOfNights = ChronoUnit.DAYS.between(checkinDate, checkoutDate);
+        return price * (int) numberOfNights;
+    }
 }
