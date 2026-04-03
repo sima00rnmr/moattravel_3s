@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="moattravel_3s/src/main/java"/>
+	<classpathentry kind="src" path="moattravel_3s/src/test/java"/>
+	<classpathentry kind="src" path="moattravel_4/src/main/java"/>
+	<classpathentry kind="src" path="moattravel_4/src/test/java"/>
+	<classpathentry kind="src" path="moattravel_4/target/spring-aot/main/sources"/>
+	<classpathentry kind="output" path="moattravel_4/target/spring-aot/main/classes"/>
+</classpath>
